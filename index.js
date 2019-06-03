@@ -10,7 +10,7 @@
 
 function onInstallation(bot, installer) {
     if (installer) {
-        bot.startPrivateConversation({user: installer}, function (err, convo) {
+        bot.startPrivateConversation({ user: installer }, function(err, convo) {
             if (err) {
                 console.log(err);
             } else {
@@ -30,11 +30,11 @@ var config = {};
 if (process.env.MONGOLAB_URI) {
     var BotkitStorage = require('botkit-storage-mongo');
     config = {
-        storage: BotkitStorage({mongoUri: process.env.MONGOLAB_URI}),
+        storage: BotkitStorage({ mongoUri: process.env.MONGOLAB_URI }),
     };
 } else {
     config = {
-        json_file_store: ((process.env.TOKEN)?'./db_slack_bot_ci/':'./db_slack_bot_a/'), //use a different name if an app or CI
+        json_file_store: ((process.env.TOKEN) ? './db_slack_bot_ci/' : './db_slack_bot_a/'), //use a different name if an app or CI
     };
 }
 
@@ -66,11 +66,11 @@ if (process.env.TOKEN || process.env.SLACK_TOKEN) {
  * TODO: fixed b0rked reconnect behavior
  */
 // Handle events related to the websocket connection to Slack
-controller.on('rtm_open', function (bot) {
+controller.on('rtm_open', function(bot) {
     console.log('** The RTM api just connected!');
 });
 
-controller.on('rtm_close', function (bot) {
+controller.on('rtm_close', function(bot) {
     console.log('** The RTM api just closed');
     // you may want to attempt to re-open
 });
@@ -81,7 +81,7 @@ controller.on('rtm_close', function (bot) {
  */
 // BEGIN EDITING HERE!
 
-controller.on('bot_channel_join', function (bot, message) {
+controller.on('bot_channel_join', function(bot, message) {
     bot.reply(message, "I'm here!")
 });
 
@@ -89,22 +89,22 @@ controller.on('123', function(bot, message) {
     bot.reply(message, "yo dawg")
 });
 
-controller.hears('hello', 'direct_message', function (bot, message) {
+controller.hears('hello', 'direct_message', function(bot, message) {
     bot.reply(message, {
-        attachments:[
+        attachments: [
             {
                 title: 'Do you want to interact with my buttons?',
                 callback_id: '123',
                 attachment_type: 'default',
                 actions: [
                     {
-                        "name":"yes",
+                        "name": "yes",
                         "text": "Yes",
                         "value": "yes",
                         "type": "button",
                     },
                     {
-                        "name":"no",
+                        "name": "no",
                         "text": "No",
                         "value": "no",
                         "type": "button",
@@ -115,33 +115,37 @@ controller.hears('hello', 'direct_message', function (bot, message) {
     })
 });
 
-controller.hears('start pomodoro', ['direct_mention', 'mention', 'direct_message'], function (bot, message) {
-    // let seconds = message.text.slice(15);
-    let [num, unit] = message.text.match(/[0-9]+ (minutes|hours|seconds)/)[0].split(' ');
-    let multiplier;
-    switch (unit) {
-        case 'hours':
-            multiplier = 60 * 60 * 1000;
-            break;
-        case 'minutes':
-            multiplier = 60 * 1000;
-            break;
-        case 'seconds':
-            multiplier = 1000;
-            break;
-        default:
-            multiplier = -1
-            break;
-    }
+controller.hears('start pomodoro', ['direct_mention', 'mention', 'direct_message'], function(bot, message) {
+    try {
+        // let seconds = message.text.slice(15);
+        let [num, unit] = message.text.match(/[0-9]+ (minutes|hours|seconds)/)[0].split(' ');
+        let multiplier;
+        switch (unit) {
+            case 'hours':
+                multiplier = 60 * 60 * 1000;
+                break;
+            case 'minutes':
+                multiplier = 60 * 1000;
+                break;
+            case 'seconds':
+                multiplier = 1000;
+                break;
+            default:
+                multiplier = -1
+                break;
+        }
 
-    // bot.reply(message, seconds)
-    if (isNaN(num) || multiplier < 0) {
-        bot.reply(message, 'usage: `start pomodoro <"hours" | "minutes" | "seconds">');
-    } else {
-        bot.reply(message, `Starting timer for ${num} ${unit}`);
-        setTimeout(function() {
-            bot.reply(message, 'done');
-        }, parseFloat(num) * multiplier);
+        // bot.reply(message, seconds)
+        if (isNaN(num) || multiplier < 0) {
+            bot.reply(message, 'usage: `start pomodoro <"hours" | "minutes" | "seconds">');
+        } else {
+            bot.reply(message, `Starting timer for ${num} ${unit}`);
+            setTimeout(function() {
+                bot.reply(message, 'done');
+            }, parseFloat(num) * multiplier);
+        }
+    } catch (err) {
+        bot.reply(message, 'Sorry, something went wrong. Try again')
     }
 });
 
