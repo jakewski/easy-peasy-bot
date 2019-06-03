@@ -80,49 +80,6 @@ controller.on('rtm_close', function (bot) {
  * Core bot logic goes here!
  */
 // BEGIN EDITING HERE!
-const shit = [
-	{
-		"type": "section",
-		"text": {
-			"type": "mrkdwn",
-			"text": "Pick an item from the dropdown list"
-		},
-		"accessory": {
-			"type": "static_select",
-			"placeholder": {
-				"type": "plain_text",
-				"text": "Select an item",
-				"emoji": true
-			},
-			"options": [
-				{
-					"text": {
-						"type": "plain_text",
-						"text": "Choice 1",
-						"emoji": true
-					},
-					"value": "value-0"
-				},
-				{
-					"text": {
-						"type": "plain_text",
-						"text": "Choice 2",
-						"emoji": true
-					},
-					"value": "value-1"
-				},
-				{
-					"text": {
-						"type": "plain_text",
-						"text": "Choice 3",
-						"emoji": true
-					},
-					"value": "value-2"
-				}
-			]
-		}
-	}
-]
 
 controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here!")
@@ -159,15 +116,32 @@ controller.hears('hello', 'direct_message', function (bot, message) {
 });
 
 controller.hears('start pomodoro', ['direct_mention', 'mention', 'direct_message'], function (bot, message) {
-    let seconds = message.text.slice(15);
-    bot.reply(message, seconds)
-    if (isNaN(seconds)) {
-        bot.reply(message, 'usage: `start pomodoro <number of seconds>');
+    // let seconds = message.text.slice(15);
+    let [num, unit] = message.text.match(/[0-9]+ (minutes|hours|seconds)/)[0].split(' ');
+    let multiplier;
+    switch (unit) {
+        case 'hours':
+            multiplier = 60 * 60 * 1000;
+            break;
+        case 'minutes':
+            multiplier = 60 * 1000;
+            break;
+        case 'seconds':
+            multiplier = 1000;
+            break;
+        default:
+            multiplier = -1
+            break;
+    }
+
+    // bot.reply(message, seconds)
+    if (isNaN(num) || multiplier < 0) {
+        bot.reply(message, 'usage: `start pomodoro <"hours" | "minutes" | "seconds">');
     } else {
-        bot.reply(message, `Starting timer for ${seconds} seconds`);
+        bot.reply(message, `Starting timer for ${num} ${unit}`);
         setTimeout(function() {
             bot.reply(message, 'done');
-        }, seconds * 1000);
+        }, parseFloat(num) * multiplier);
     }
 });
 
