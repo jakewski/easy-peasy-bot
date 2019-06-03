@@ -89,6 +89,12 @@ controller.hears('hello', 'direct_message', function (bot, message) {
     bot.reply(message, 'Hello!');
 });
 
+controller.hears('start pomodoro', 'direct_message', function (bot, message) {
+    bot.reply(message, 'Starting timer for 10 seconds');
+    setTimeout(function() {
+        bot.reply(message, 'done');
+    }, 10000);
+});
 
 /**
  * AN example of what could be:
