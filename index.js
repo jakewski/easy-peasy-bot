@@ -158,11 +158,17 @@ controller.hears('hello', 'direct_message', function (bot, message) {
     })
 });
 
-controller.hears('start pomodoro', 'direct_message', function (bot, message) {
-    bot.reply(message, 'Starting timer for 10 seconds');
-    setTimeout(function() {
-        bot.reply(message, 'done');
-    }, 10000);
+controller.hears('start pomodoro', ['direct_mention', 'mention', 'direct_message'], function (bot, message) {
+    let seconds = message.text.slice(15);
+    bot.reply(message, seconds)
+    if (isNaN(seconds)) {
+        bot.reply(message, 'usage: `start pomodoro <number of seconds>');
+    } else {
+        bot.reply(message, `Starting timer for ${seconds} seconds`);
+        setTimeout(function() {
+            bot.reply(message, 'done');
+        }, seconds * 1000);
+    }
 });
 
 /**
