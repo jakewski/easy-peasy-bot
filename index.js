@@ -80,13 +80,82 @@ controller.on('rtm_close', function (bot) {
  * Core bot logic goes here!
  */
 // BEGIN EDITING HERE!
+const shit = [
+	{
+		"type": "section",
+		"text": {
+			"type": "mrkdwn",
+			"text": "Pick an item from the dropdown list"
+		},
+		"accessory": {
+			"type": "static_select",
+			"placeholder": {
+				"type": "plain_text",
+				"text": "Select an item",
+				"emoji": true
+			},
+			"options": [
+				{
+					"text": {
+						"type": "plain_text",
+						"text": "Choice 1",
+						"emoji": true
+					},
+					"value": "value-0"
+				},
+				{
+					"text": {
+						"type": "plain_text",
+						"text": "Choice 2",
+						"emoji": true
+					},
+					"value": "value-1"
+				},
+				{
+					"text": {
+						"type": "plain_text",
+						"text": "Choice 3",
+						"emoji": true
+					},
+					"value": "value-2"
+				}
+			]
+		}
+	}
+]
 
 controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here!")
 });
 
+controller.on('123', function(bot, message) {
+    bot.reply(message, "yo dawg")
+});
+
 controller.hears('hello', 'direct_message', function (bot, message) {
-    bot.reply(message, 'Hello!');
+    bot.reply(message, {
+        attachments:[
+            {
+                title: 'Do you want to interact with my buttons?',
+                callback_id: '123',
+                attachment_type: 'default',
+                actions: [
+                    {
+                        "name":"yes",
+                        "text": "Yes",
+                        "value": "yes",
+                        "type": "button",
+                    },
+                    {
+                        "name":"no",
+                        "text": "No",
+                        "value": "no",
+                        "type": "button",
+                    }
+                ]
+            }
+        ]
+    })
 });
 
 controller.hears('start pomodoro', 'direct_message', function (bot, message) {
