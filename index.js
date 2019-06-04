@@ -114,14 +114,14 @@ controller.hears('hello', 'direct_message', function(bot, message) {
         ]
     })
 });
-
+let currentTimeout;
 controller.hears('start pomodoro', ['direct_mention', 'mention', 'direct_message'], function(bot, message) {
     try {
         // let seconds = message.text.slice(15);
         let [num, unit] = message.text.match(/[0-9]+ (minute[s]?|hour[s]?|second[s]?)/)[0].split(' ');
         let multiplier;
         switch (unit) {
-            case 'hours':
+            case 'hours' :
             case 'hour':
                 multiplier = 60 * 60 * 1000;
                 break;
@@ -143,7 +143,11 @@ controller.hears('start pomodoro', ['direct_mention', 'mention', 'direct_message
             bot.reply(message, 'usage: `start pomodoro <"hours" | "minutes" | "seconds">');
         } else {
             bot.reply(message, `Starting timer for ${num} ${unit}`);
-            setTimeout(function() {
+            if(currentTimeout) {
+                clearTimeout(currentTimeout)
+                currentTimeout = null;
+            }
+            currentTimeout = setTimeout(function() {
                 bot.reply(message, 'done');
             }, parseFloat(num) * multiplier);
         }
@@ -151,6 +155,16 @@ controller.hears('start pomodoro', ['direct_mention', 'mention', 'direct_message
         bot.reply(message, 'Sorry, something went wrong. Try again')
     }
 });
+
+controller.hears('cancel', ['direct_mention', 'mention', 'direct_message'], function(bot, message) {
+    if (currentTimeout) {
+        clearTimeout(currentTimeout)
+        currentTimeout = null;
+        bot.reply(message, "cleared current timer")
+    } else {
+        bot.reply(message, "no set timer to clear")
+    }
+})
 
 /**
  * AN example of what could be:
