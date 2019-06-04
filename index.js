@@ -118,16 +118,19 @@ controller.hears('hello', 'direct_message', function(bot, message) {
 controller.hears('start pomodoro', ['direct_mention', 'mention', 'direct_message'], function(bot, message) {
     try {
         // let seconds = message.text.slice(15);
-        let [num, unit] = message.text.match(/[0-9]+ (minutes|hours|seconds)/)[0].split(' ');
+        let [num, unit] = message.text.match(/[0-9]+ (minute[s]?|hour[s]?|second[s]?)/)[0].split(' ');
         let multiplier;
         switch (unit) {
             case 'hours':
+            case 'hour':
                 multiplier = 60 * 60 * 1000;
                 break;
             case 'minutes':
+            case 'minute':
                 multiplier = 60 * 1000;
                 break;
             case 'seconds':
+            case 'second':
                 multiplier = 1000;
                 break;
             default:
